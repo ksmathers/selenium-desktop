@@ -13,9 +13,11 @@ Package: * \
 Pin: release o=LP-PPA-mozillateam \
 Pin-Priority: 1001 \
 ' | tee /etc/apt/preferences.d/mozilla-firefox && \
-    apt install -y firefox
+    apt update && \
+    apt install -y firefox-esr && \
+    ln -s /usr/bin/firefox-esr /usr/bin/firefox
 
-RUN useradd -m desktop-user
+RUN useradd -m -s /bin/bash desktop-user
 COPY rootdir /root
 RUN mv /root/sudoers-desktop-user /etc/sudoers.d/
 
@@ -36,6 +38,7 @@ RUN mkdir $HOME/.vnc && \
     chmod ug+x $HOME/.vnc/xstartup && \
     $HOME/.miniconda/bin/conda init
 
-#ENTRYPOINT [ "/bin/bash" ]
 ENV USER desktop-user
-ENTRYPOINT [ "vncserver", ":1", "-geometry 1920x1080", "-fg" ]
+#ENTRYPOINT [ "/bin/bash" ]
+
+ENTRYPOINT [ "/bin/bash", "entrypoint.sh" ]
